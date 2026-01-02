@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const userModel_js_1 = __importDefault(require("../Models/userModel.js"));
+const userModel_1 = __importDefault(require("../Models/userModel"));
 const JWT_SECRET = process.env.JWT_SECRET || "afklfjkafjkajfklfkl";
 const authMiddleware = async (req, res, next) => {
     try {
@@ -14,7 +14,7 @@ const authMiddleware = async (req, res, next) => {
         }
         const token = authHeader.split(" ")[1];
         const decoded = jsonwebtoken_1.default.verify(token, JWT_SECRET);
-        const user = await userModel_js_1.default.findById(decoded.id);
+        const user = await userModel_1.default.findById(decoded.id);
         if (!user) {
             return res.status(401).json({ message: "Unauthorized" });
         }
