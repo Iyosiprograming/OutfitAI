@@ -8,4 +8,6 @@ const express_1 = __importDefault(require("express"));
 const router = express_1.default.Router();
 // Register User
 router.post("/create", userController_1.registerUser);
+// login user
+router.post("/login", userController_1.loginUser);
 exports.default = router;
