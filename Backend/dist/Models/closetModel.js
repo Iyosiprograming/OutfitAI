@@ -29,6 +29,10 @@ const closetSchema = new mongoose_1.default.Schema({
                 ],
                 required: true
             },
+            name: {
+                type: String,
+                required: true
+            },
             color: {
                 type: String,
                 required: true
@@ -39,8 +43,8 @@ const closetSchema = new mongoose_1.default.Schema({
                 min: 1
             },
             image: {
-                type: String,
-                required: true // URL or file path
+                name: { type: String, required: true }, // filename
+                url: { type: String, required: true } // path or URL
             }
         }
     ]

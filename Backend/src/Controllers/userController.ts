@@ -22,7 +22,7 @@ export const registerUser = async (req: Request, res: Response) => {
 
     await Closet.create({
       userId: user._id,
-      clothes: [] 
+      clothes: []
     })
 
     res.status(201).json({ message: "User Created Successfully", user })
