@@ -20,10 +20,9 @@ export const registerUser = async (req: Request, res: Response) => {
 
     const user = await User.create({ email, password: hashedPassword })
 
-    // create empty closet for this user
     await Closet.create({
       userId: user._id,
-      clothes: [] // empty array prevents validation errors
+      clothes: [] 
     })
 
     res.status(201).json({ message: "User Created Successfully", user })
@@ -55,7 +54,6 @@ export const loginUser = async (req: Request, res: Response) => {
 // ---------------- Add Item to Closet ----------------
 export const addItemToCloset = async (req: Request, res: Response) => {
   try {
-    // 👇 TypeScript doesn't know req.user exists, so use "any"
     const userId = (req as any).user._id
 
     const { type, color, quantity } = req.body
@@ -68,7 +66,6 @@ export const addItemToCloset = async (req: Request, res: Response) => {
     const closet = await Closet.findOne({ userId })
     if (!closet) return res.status(404).json({ message: "Closet not found" })
 
-    // check if same item exists → increment quantity
     const item = closet.clothes.find(c => c.type === type && c.color === color)
     if (item) {
       item.quantity += quantity || 1

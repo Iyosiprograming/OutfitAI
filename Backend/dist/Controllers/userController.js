@@ -19,10 +19,9 @@ const registerUser = async (req, res) => {
         }
         const hashedPassword = bcrypt_1.default.hashSync(password, 10);
         const user = await userModel_1.default.create({ email, password: hashedPassword });
-        // create empty closet for this user
         await closetModel_1.default.create({
             userId: user._id,
-            clothes: [] // empty array prevents validation errors
+            clothes: []
         });
         res.status(201).json({ message: "User Created Successfully", user });
     }
@@ -54,7 +53,6 @@ exports.loginUser = loginUser;
 // ---------------- Add Item to Closet ----------------
 const addItemToCloset = async (req, res) => {
     try {
-        // 👇 TypeScript doesn't know req.user exists, so use "any"
         const userId = req.user._id;
         const { type, color, quantity } = req.body;
         // validate input
@@ -64,7 +62,6 @@ const addItemToCloset = async (req, res) => {
         const closet = await closetModel_1.default.findOne({ userId });
         if (!closet)
             return res.status(404).json({ message: "Closet not found" });
-        // check if same item exists → increment quantity
         const item = closet.clothes.find(c => c.type === type && c.color === color);
         if (item) {
             item.quantity += quantity || 1;
