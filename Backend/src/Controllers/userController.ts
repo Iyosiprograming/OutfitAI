@@ -54,29 +54,46 @@ export const loginUser = async (req: Request, res: Response) => {
 // ---------------- Add Item to Closet ----------------
 export const addItemToCloset = async (req: Request, res: Response) => {
   try {
-    const userId = (req as any).user._id
+    const userId = (req as any).user._id;
+    const { type, name, color, quantity } = req.body;
 
-    const { type, color, quantity } = req.body
-
-    // validate input
-    if (!type || !color) {
-      return res.status(400).json({ message: "`type` and `color` are required" })
+    if (!type || !name || !color) {
+      return res.status(400).json({ message: "`type`, `name`, and `color` are required" });
     }
 
-    const closet = await Closet.findOne({ userId })
-    if (!closet) return res.status(404).json({ message: "Closet not found" })
+    if (!req.file) {
+      return res.status(400).json({ message: "Item image is required" });
+    }
 
-    const item = closet.clothes.find(c => c.type === type && c.color === color)
+    const imageData = {
+      name: req.file.filename,
+      url: `/uploads/${req.file.filename}`, // relative URL
+    };
+
+    const closet = await Closet.findOne({ userId });
+    if (!closet) return res.status(404).json({ message: "Closet not found" });
+
+    const item = closet.clothes.find(
+      c => c.type === type && c.name === name && c.color === color
+    );
+
     if (item) {
-      item.quantity += quantity || 1
+      item.quantity += quantity ? Number(quantity) : 1;
+      item.image = imageData; // optional: update image
     } else {
-      closet.clothes.push({ type, color, quantity: quantity || 1 })
+      closet.clothes.push({
+        type,
+        name,
+        color,
+        quantity: quantity ? Number(quantity) : 1,
+        image: imageData,
+      });
     }
 
-    await closet.save()
-    res.status(200).json(closet)
+    await closet.save();
+    res.status(200).json(closet);
   } catch (err) {
-    console.log("Error While Adding Item to Closet", err)
-    res.status(500).json({ message: "Server Error" })
+    console.error("Error adding item to closet:", err);
+    res.status(500).json({ message: "Server error" });
   }
-}
+};

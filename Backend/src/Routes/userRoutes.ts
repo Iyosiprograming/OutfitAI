@@ -1,16 +1,21 @@
-import { registerUser , loginUser, addItemToCloset} from "../Controllers/userController";
+import { registerUser, loginUser, addItemToCloset } from "../Controllers/userController";
+import { upload } from "../Middleware/upload";
 import authMiddleware from "../Middleware/authMiddleware";
 import express from "express";
 
-const router = express.Router()
+const router = express.Router();
 
 // Register User
+router.post("/create", registerUser);
 
-router.post("/create", registerUser)
+// Login User
+router.post("/login", loginUser);
 
-// login user
-router.post("/login", loginUser)
-router.use(authMiddleware)
-router.post("/add", addItemToCloset)
+// Protect routes after this middleware
+router.use(authMiddleware);
 
-export default router
+// Add item to closet with image upload
+// "image" is the field name in the form-data
+router.post("/add", upload.single("image"), addItemToCloset);
+
+export default router;
